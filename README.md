@@ -1,95 +1,73 @@
 # Walkie Talkie Firmware (ATmega328P)
 
-Minimal firmware for a DIY walkie-talkie using:
+Firmware pentru un walkie-talkie cu piesele astea:
 
-- **MAX9814** microphone module (ADC input)
-- **HC-05** Bluetooth (UART data link)
-- **Speaker on PWM** (audio output)
+- **MAX9814** pentru microfon, pe ADC0
+- **HC-05** pentru legatura pe serial / Bluetooth
+- **Speaker pe PWM**, iesire pe OC1A / D9
 
-Target board: **ATmega328P Xplained Mini** (or Arduino Uno).
+Placa **ATmega328P Xplained Mini**
 
-Reference: https://ocw.cs.pub.ro/courses/pm/proiect/xplainedmini
+Referinta: https://ocw.cs.pub.ro/courses/pm/prj2026/alexandru.jipa2803/iani.irascu
 
-## Wiring
+## Conectare
 
 ### MAX9814
 
 - VDD -> 5V
 - GND -> GND
 - OUT -> A0 / PC0 / ADC0
-- GAIN -> not connected (default gain)
-- AR -> not connected (default AGC)
+- GAIN -> neconectat
+- AR -> neconectat
 
 ### HC-05
 
 - VCC -> 5V
 - GND -> GND
-- TX -> PD0 / RX (MCU RX)
-- RX -> PD1 / TX (MCU TX) via voltage divider
-- STATE -> not connected
-- EN -> not connected (AT mode off)
+- TX -> PD0 / RX (RX de pe MCU)
+- RX -> PD1 / TX (TX de pe MCU) prin divizor de tensiune
+- STATE -> neconectat
+- EN -> neconectat
 
 ### Speaker
 
 - Speaker + -> PB1 / OC1A / D9 (PWM)
 - Speaker - -> GND
 
-## Build / Upload / Monitor
+Baud-ul UART implicit este **57600**
+Daca HC-05-ul tau inca merge pe **9600**, schimba `UART_BAUD` din cod si `monitor_speed` din platformio.ini
 
-```bash
-platformio run --environment avr
-platformio run --target upload --environment avr
-platformio device monitor --environment avr
-```
+## Comenzi
 
-Default UART baud is **57600** (see `platformio.ini`).
-If your HC-05 data mode is still **9600**, change `-DUART_BAUD` and `monitor_speed`.
+Scrie `help` ca sa vezi lista.
 
-## Commands
+- `status` - arata modul curent si setarile
+- `mode <idle|tx|rx|duplex>`
+  - `idle`: doar shell
+  - `tx`: microfon -> UART, butonul PTT de pe D7 porneste transmisia
+  - `rx`: audio din UART -> speaker
+  - `duplex`: mod walkie half-duplex cu acelasi buton PTT
+- `bt <AT command>` - trimite o comanda AT catre HC-05 pe pinii dedicati
+- `rxgain <1-255>` - seteaza gain-ul pentru sunetul receptionat
 
-Type `help` to list commands.
+pe UART merg bytes audio raw, PCM pe 8 biti fara semn, centrat la 128. In `tx` si `duplex`, placa transmite doar cat timp tineti apasat PTT.
 
-- `status` - show current mode and last ADC sample
-- `mode <idle|loop|tx|rx>`
-  - `loop`: mic -> speaker (local test)
-  - `tx`: mic -> UART (send)
-  - `rx`: UART -> speaker (receive)
-- `adc [count]` - print raw ADC samples
-- `pwm <0-255|off>` - fixed PWM output
-- `stats` - show TX/RX drop counters
+## Test rapid
 
-Note: In `tx`/`rx` mode, the UART carries **raw audio bytes**. Reset the board to exit.
+1. **Shell**
+   - Da `status` si vezi daca raspunde cu modul curent.
 
-## Test Plan
+2. **TX**
+   - Pune `mode tx`.
+   - Tine apasat PTT si verifica daca audio-ul pleaca doar cat timp apesi.
 
-1) **UART / Console**
-  - `status` should respond with `walkie>` prompt.
+3. **RX**
+   - Pune `mode rx`.
+   - Trimite PCM raw pe UART si verifica daca se aude in speaker.
 
-2) **ADC (mic)**
-  - `adc 20`
-  - Speak or tap the mic and watch values change.
+4. **Duplex**
+   - Pune `mode duplex`.
+   - Tine PTT apasat ca sa vorbesti, apoi da drumul ca sa auzi ce vine inapoi.
 
-3) **PWM (speaker)**
-  - `pwm 128` (silence)
-  - `pwm 255` (max)
-  - `pwm 0`
-
-4) **Local loopback**
-  - `mode loop`
-  - You should hear your voice on the speaker.
-  - Reset board to exit.
-
-5) **Walkie test (two boards)**
-  - Board A: `mode tx`
-  - Board B: `mode rx`
-  - Talk on A, listen on B. Swap roles by resetting and changing modes.
-
-## Notes
-
-- UART speed must be high enough for audio. **57600** is recommended for this setup.
-- If audio is distorted, check power, wiring, and baud settings.
-- HC-05 RX must be level-shifted (voltage divider).
-
-## License
-
-This project is licensed under the **MIT License** (see `LICENSE`).
+5. **Comenzi AT pe BT**
+   - Foloseste `bt AT` sau `bt AT+UART?` cand HC-05 e in mod AT.
