@@ -1,4 +1,9 @@
-# Walkie Talkie Firmware (ATmega328P)
+# Walkie Talkie
+
+Linkuri:
+https://ocw.cs.pub.ro/courses/pm/prj2026/alexandru.jipa2803/iani.irascu
+https://github.com/IaniIrascu/Walkie-Talkie
+
 
 Firmware pentru un walkie-talkie cu piesele astea:
 
@@ -8,7 +13,6 @@ Firmware pentru un walkie-talkie cu piesele astea:
 
 Placa **ATmega328P Xplained Mini**
 
-Referinta: https://ocw.cs.pub.ro/courses/pm/prj2026/alexandru.jipa2803/iani.irascu
 
 ## Conectare
 
