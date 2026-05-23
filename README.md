@@ -39,7 +39,6 @@ Placa **ATmega328P Xplained Mini**
 - Speaker - -> GND
 
 Baud-ul UART implicit este **57600**
-Daca HC-05-ul tau inca merge pe **9600**, schimba `UART_BAUD` din cod si `monitor_speed` din platformio.ini
 
 ## Comenzi
 
