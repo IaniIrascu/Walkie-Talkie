@@ -253,31 +253,6 @@ bool parseU8(const char *text, uint8_t &value) {
   return true;
 }
 
-void printFixedTenths(uint32_t tenths) {
-  Serial.print(tenths / 10UL);
-  Serial.print('.');
-  Serial.print(tenths % 10UL);
-}
-
-uint8_t calcLevelFromPeakToPeak(uint8_t minValue, uint8_t maxValue) {
-  const uint16_t p2p = static_cast<uint16_t>(maxValue) - minValue;
-  const uint16_t level = (p2p + 1U) / 2U;
-  return level > 127U ? 127U : static_cast<uint8_t>(level);
-}
-
-void printLevelBar(uint8_t level) {
-  const uint8_t width = 32;
-  uint8_t filled = static_cast<uint8_t>((static_cast<uint16_t>(level) * width + 63U) / 127U);
-  if (filled > width) {
-    filled = width;
-  }
-  Serial.print('[');
-  for (uint8_t i = 0; i < width; ++i) {
-    Serial.print(i < filled ? '#' : '.');
-  }
-  Serial.print(']');
-}
-
 size_t splitArgs(char *text, char *argv[], size_t maxArgs) {
   size_t argc = 0;
   char *p = text;
