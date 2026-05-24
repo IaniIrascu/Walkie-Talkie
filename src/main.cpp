@@ -611,9 +611,6 @@ void setup() {
   delay(50);
   setupPwm();
   setupAdc();
-  // led pe D13 la activitate rx
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
   gMode = bootMode();
   resetBuffers();
   // intra in shell daca nu sunt in tx sau rx imediat
@@ -627,13 +624,4 @@ void setup() {
 void loop() {
   pollPtt();
   pollSerial();
-  // arata activitate rx pe led D13
-  {
-    const uint32_t now = millis();
-    if (gMode == Mode::Rx && (now - gRxActivityMs) < 200UL) {
-      digitalWrite(13, HIGH);
-    } else {
-      digitalWrite(13, LOW);
-    }
-  }
 }
